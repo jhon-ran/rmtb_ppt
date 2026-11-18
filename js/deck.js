@@ -16,8 +16,13 @@
   const timer = document.getElementById("timer");
   let current = 0;
 
+  // Pantallas angostas: página que se desplaza (ver CSS, sección 7). Sin lienzo ni teclas.
+  const mobileMQ = window.matchMedia("(max-width: 900px)");
+  const isMobile = function () { return mobileMQ.matches; };
+
   /* 1) Lienzo 1280×720 escalado a la ventana ────────────── */
   function fit() {
+    if (isMobile()) { deck.style.transform = ""; return; }
     const s = Math.min(innerWidth / 1280, innerHeight / 720);
     deck.style.transform = "scale(" + s + ")";
   }
@@ -46,6 +51,7 @@
   }
 
   addEventListener("keydown", function (e) {
+    if (isMobile()) return;
     document.body.classList.remove("hint");
     const k = e.key;
     if (["ArrowRight", "PageDown", " ", "Enter"].includes(k)) { e.preventDefault(); go(current + 1); startTimer(); }
@@ -62,6 +68,7 @@
   });
 
   addEventListener("click", function (e) {
+    if (isMobile()) return;
     if (e.target.closest("#notes")) return;
     document.body.classList.remove("hint");
     go(e.clientX < innerWidth / 3 ? current - 1 : current + 1);
@@ -71,7 +78,7 @@
   let touchX = null;
   addEventListener("touchstart", function (e) { touchX = e.touches[0].clientX; }, { passive: true });
   addEventListener("touchend", function (e) {
-    if (touchX === null) return;
+    if (touchX === null || isMobile()) { touchX = null; return; }
     const dx = e.changedTouches[0].clientX - touchX;
     if (Math.abs(dx) > 50) go(current + (dx < 0 ? 1 : -1));
     touchX = null;
@@ -149,6 +156,8 @@
       '</article>';
     }).join("");
   }
+
+  mobileMQ.addEventListener("change", function () { fit(); go(current); });
 
   renderMeetups();
   const hash = parseInt(location.hash.slice(1), 10);

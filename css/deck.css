@@ -25,9 +25,9 @@
 /* 2) Lienzo 1280×720 que escala a cualquier pantalla ───── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;background:#0b1220;font-family:var(--font);color:var(--ink)}
-#stage{position:fixed;inset:0;display:grid;place-items:center}
+#stage{position:fixed;inset:0;overflow:hidden}
 #deck{
-  width:1280px;height:720px;position:relative;overflow:hidden;transform-origin:center;
+  width:1280px;height:720px;position:absolute;left:50%;top:50%;margin:-360px 0 0 -640px;overflow:hidden;transform-origin:center;
   box-shadow:0 30px 100px rgba(0,0,0,.5);
   background:
     radial-gradient(1200px 600px at 15% 10%, rgba(18,194,179,.20), transparent 55%),
@@ -302,12 +302,129 @@ ul{list-style:none}
 #help{position:fixed;top:14px;left:18px;z-index:20;color:rgba(255,255,255,.7);font-size:13px;opacity:0;transition:opacity .5s}
 body.hint #help{opacity:1}
 
+/* 7) Modo móvil / pantallas angostas (≤ 900 px) ───────────
+   El lienzo 16:9 se reemplaza por una página que se desplaza:
+   todas las diapositivas apiladas, una columna, tipografía fluida.
+   En pantallas grandes nada de esto aplica. */
+@media (max-width:900px){
+  html,body{height:auto;overflow:auto;overflow-x:hidden;background:#f8fafc}
+  #stage{position:static;overflow:visible}
+  #deck{width:auto;height:auto;position:relative;left:auto;top:auto;margin:0;transform:none!important;overflow:visible;box-shadow:none}
+  #bar,#count,#help,#timer,#notes{display:none!important}
+
+  .deck-nav{position:sticky;top:0;height:52px;padding:0 18px}
+  .brand{font-size:15px}
+  .deck-nav .url{font-size:13px}
+
+  .slide{
+    position:relative;top:auto;bottom:auto;left:auto;right:auto;
+    opacity:1;visibility:visible;transform:none;transition:none;
+    display:block;padding:38px 20px 42px;border-bottom:1px solid rgba(15,23,42,.06);
+  }
+  .slide.prev{transform:none}
+  .slide .reveal,.slide .polaroid{animation:none!important;opacity:1}
+
+  .h2{font-size:clamp(28px,8vw,38px)}
+  .lead{font-size:17px;line-height:1.6}
+  .kicker{font-size:12px}
+  .btn-cta{min-height:50px;font-size:16px;padding:0 22px}
+  .card,.hosts-card,.who-card{border-radius:24px}
+
+  /* 1 · Portada */
+  .s-hero{display:grid;grid-template-columns:1fr;gap:26px;padding-top:30px}
+  .s-hero .headline{font-size:clamp(32px,9.4vw,46px);margin:16px 0 14px}
+  .s-hero .pill{font-size:12.5px;padding:6px 12px}
+  .hero-cta{flex-direction:column;align-items:flex-start;gap:14px;margin-top:22px}
+  .hero-frame .photo{height:auto;aspect-ratio:4/3}
+
+  /* 2 · Comunidad en acción */
+  .s-action{display:grid;grid-template-columns:1fr;gap:28px}
+  .stats-col{margin-top:20px;gap:14px}
+  .stat-num{font-size:38px;min-width:84px}
+  .stat-label{font-size:16px}
+  .collage{height:auto;display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+  .polaroid{position:static;width:auto;padding:6px 6px 0;transform:rotate(var(--r,0deg));border-radius:6px}
+  .polaroid img{height:auto;aspect-ratio:4/3}
+  .polaroid figcaption{height:30px;font-size:12.5px}
+  .p1{--r:-1.6deg}.p2{--r:1.4deg}.p3{--r:1.2deg}.p4{--r:-1.4deg}
+
+  /* 3 · Por qué */
+  .s-why{display:grid;grid-template-columns:1fr;gap:30px}
+  .s-why p.lead{font-size:16.5px}
+  .why-photo .photo{height:auto;aspect-ratio:4/3}
+  .why-note{position:relative;right:auto;bottom:auto;margin:-22px 12px 0;max-width:none;font-size:16px;padding:14px 18px}
+
+  /* 4 · Cómo funcionamos */
+  .s-how{display:grid;grid-template-columns:1fr;gap:20px}
+  .how-card{padding:26px 22px}
+  .how-title{font-size:26px}
+  .how-grid{grid-template-columns:1fr;gap:22px}
+  .how-item strong{font-size:19px}
+  .how-item span span{font-size:15.5px}
+  .who-card{padding:28px 22px;gap:22px}
+  .who-card h3{font-size:26px;margin-bottom:16px}
+  .who-card .chip{font-size:15px;padding:8px 14px}
+  .who-note{font-size:24px}
+
+  /* 5 · Visión */
+  .s-vision{display:grid;grid-template-columns:1fr;gap:26px}
+  .vision-art{height:300px}
+  .vision-quote{left:20px;right:20px;bottom:20px}
+  .vision-quote p{font-size:22px}
+  .vision-copy .h2{font-size:clamp(26px,7.2vw,34px);margin:8px 0 20px}
+  .step strong{font-size:18px}
+  .step.final strong{font-size:19px}
+  .step span span{font-size:14.5px}
+
+  /* 6 · Próximos meetups */
+  .s-next .h2{max-width:none;margin-bottom:20px}
+  .meetups,.meetups.one{grid-template-columns:1fr;gap:18px}
+  .ev{padding:22px 20px}
+  .ev h3{font-size:22px}
+  .ev-meta{font-size:16px}
+  .ev-date{width:72px;height:80px}
+  .ev-date b{font-size:32px}
+  .next-foot{flex-direction:row;padding:16px 18px;gap:16px;margin-top:18px}
+  .next-foot strong{font-size:18px}
+  .next-foot span{font-size:14.5px}
+  .next-foot img{width:88px;height:88px}
+
+  /* 7 · HackSargazo */
+  .s-hack{display:grid;grid-template-columns:1fr;gap:28px}
+  .hack-title{font-size:clamp(38px,11vw,54px)}
+  .hack-sub{font-size:17px}
+  .hack-flow{grid-template-columns:1fr}
+  .hack-flow i{justify-self:center;transform:rotate(90deg)}
+  .track{padding:16px 18px;gap:14px}
+  .track strong{font-size:19px}
+  .hack-cta img{width:104px;height:104px}
+  .hack-cta strong{font-size:21px}
+
+  /* 8 · Organizador y anfitriones */
+  .s-org{display:grid;grid-template-columns:1fr;gap:20px}
+  .org-card{flex-direction:column;align-items:flex-start;gap:18px;padding:26px 22px}
+  .org-photo{width:128px;height:128px}
+  .org-title{font-size:28px}
+  .org-card p{font-size:16px}
+  .hosts-card{padding:26px 22px}
+
+  /* 9 · Cierre */
+  .s-join{display:block}
+  .join-band{grid-template-columns:1fr;gap:26px;padding:30px 22px;border-radius:26px}
+  .join-band h2{font-size:clamp(28px,8vw,36px)}
+  .join-band p{font-size:17px}
+  .qrs{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .strip{grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
+  .strip img{height:84px;border-radius:12px}
+  .footline{flex-direction:column;gap:6px;padding-right:0;margin-top:18px;font-size:14px}
+}
+
 /* 6) Impresión (Ctrl+P → PDF, una diapositiva por página) ── */
 @media print{
   @page{size:1280px 720px;margin:0}
   html,body{overflow:visible;background:#fff}
   #stage{position:static;display:block}
-  #deck{transform:none!important;box-shadow:none;height:auto;overflow:visible}
+  #deck{transform:none!important;box-shadow:none;height:auto;overflow:visible;position:relative;left:auto;top:auto;margin:0}
   .deck-nav{position:absolute}
   .slide{position:relative;top:0;opacity:1;visibility:visible;transform:none;height:720px;padding-top:calc(var(--nav-h) + 30px);page-break-after:always}
   .reveal,.polaroid{animation:none!important}
